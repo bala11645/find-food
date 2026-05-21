@@ -1,0 +1,192 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global safety net catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Check if the current user is recorded in the /admins collection
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation definitions
+    function isValidVendor(data) {
+      return data.stallName is string && data.stallName.size() <= 120
+          && data.ownerName is string && data.ownerName.size() <= 100
+          && data.phone is string && data.phone.size() <= 30
+          && data.category is string && data.category.size() <= 100
+          && data.onboardingStatus in ['Pending', 'Approved', 'Rejected', 'Needs Docs', 'Under Review', 'Inspection Required']
+          && data.riskLevel in ['Low', 'Medium', 'High']
+          && data.location is string && data.location.size() <= 200
+          && data.zoneId is string
+          && data.hygieneScore is number && data.hygieneScore >= 0 && data.hygieneScore <= 100
+          && data.subscriptionPlan in ['Free', 'Starter', 'Growth', 'Premium']
+          && data.status in ['Active', 'Suspended', 'Pending', 'Normal', 'Warning', 'Inspection Scheduled', 'Trusted'];
+    }
+
+    function isValidOrder(data) {
+      return data.id is string
+          && data.vendorName is string && data.vendorName.size() <= 120
+          && data.customerName is string && data.customerName.size() <= 100
+          && data.amount is number && data.amount >= 0
+          && data.status in ['Processing', 'Completed', 'Cancelled', 'Delayed']
+          && data.type in ['Pickup', 'Delivery']
+          && data.timestamp is string;
+    }
+
+    function isValidZone(data) {
+      return data.id is string
+          && data.name is string && data.name.size() <= 100
+          && data.activeVendorsCount is number
+          && data.hiddenGemsCount is number
+          && data.crowdLevel in ['Low', 'Moderate', 'High', 'Overloaded']
+          && data.trafficIntensity in ['Clear', 'Busy', 'Heavy', 'Gridlock']
+          && data.category in ['Night Food Street', 'Temple Zone', 'Tourist Zone', 'SaaS Hub', 'Residential']
+          && data.status in ['Active', 'Disabled'];
+    }
+
+    function isValidInspector(data) {
+      return data.id is string
+          && data.name is string && data.name.size() <= 100
+          && data.completedVisits is number
+          && data.pendingInspections is number
+          && data.currentZone is string;
+    }
+
+    function isValidComplaint(data) {
+      return data.id is string
+          && data.targetName is string && data.targetName.size() <= 120
+          && data.issueType in ['Hygiene', 'Payment', 'Customer Conduct', 'Vendor Delay', 'Quality']
+          && data.priority in ['Low', 'Medium', 'High', 'Critical']
+          && data.status in ['Open', 'Pending', 'Resolved']
+          && data.description is string && data.description.size() <= 1000;
+    }
+
+    function isValidAdmin(data) {
+      return data.email is string && data.email.size() <= 100
+          && data.name is string && data.name.size() <= 100
+          && data.role in ['Super Admin', 'City Admin', 'Inspection Manager', 'Moderation Team', 'Support Team'];
+    }
+
+    // --- COLLECTION ACCESS PATHS ---
+
+    // Admins Collection
+    match /admins/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+    }
+
+    // Vendors Collection
+    match /vendors/{vendorId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidVendor(incoming());
+      allow update: if isSignedIn() && (
+        isAdmin() || (
+          // Self update of specific benign attributes
+          isValidVendor(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['phone', 'photos', 'stallName', 'documents'])
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Vendor Approvals Log Collection
+    match /vendorApprovals/{approvalId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidOrder(incoming());
+      allow update: if isSignedIn() && (isAdmin() || (isValidOrder(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'prepTimeMinutes'])));
+      allow delete: if isAdmin();
+    }
+
+    // Zones Collection
+    match /zones/{zoneId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidZone(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Inspectors Collection
+    match /inspectors/{inspectorId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidInspector(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Hygiene Reports Collection
+    match /hygieneReports/{reportId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Content Posts Collection
+    match /contentPosts/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (isAdmin() || incoming().diff(existing()).affectedKeys().hasOnly(['likes', 'views']));
+      allow delete: if isAdmin();
+    }
+
+    // Complaints Collection
+    match /complaints/{complaintId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidComplaint(incoming());
+      allow update: if isSignedIn() && (isAdmin() || (isValidComplaint(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'assignedTo'])));
+      allow delete: if isAdmin();
+    }
+
+    // Subscriptions Collection
+    match /subscriptions/{subId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Notifications (Alert Broadcasts) Collection
+    match /notifications/{notifId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // AI Alerts Collection
+    match /aiAlerts/{alertId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // Audit PDF Reports Collection
+    match /reports/{reportId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

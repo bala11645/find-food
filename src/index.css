@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+}
+
+/* Base resets & custom scrollbar for that dark modern dashboard look */
+html, body {
+  background-color: #09090b !important;
+  color: #e4e4e7 !important;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Color overrides for the Technical Dashboard / Data Grid theme */
+.bg-\[\#070a13\], 
+.bg-\[\#070b13\], 
+.bg-\[\#070b13\]\/90 {
+  background-color: #09090b !important;
+}
+
+/* Card overrides: #161618 matches the theme design exactly */
+.bg-\[\#0f172a\] {
+  background-color: #161618 !important;
+}
+.bg-\[\#0f172a\]\/90 {
+  background-color: rgba(22, 22, 24, 0.9) !important;
+}
+.bg-\[\#0f172a\]\/95 {
+  background-color: rgba(22, 22, 24, 0.95) !important;
+}
+
+/* Sub-panels and search bars */
+.bg-\[\#0b0f19\] {
+  background-color: #0d0d0f !important;
+}
+.bg-\[\#0b0f19\]\/40 {
+  background-color: rgba(13, 13, 15, 0.4) !important;
+}
+.bg-\[\#0b0f19\]\/90 {
+  background-color: rgba(13, 13, 15, 0.9) !important;
+}
+
+/* Input backgrounds and inner wells */
+.bg-\[\#080d15\] {
+  background-color: #1a1a1c !important;
+}
+.bg-\[\#090d16\] {
+  background-color: #111112 !important;
+}
+.bg-\[\#090d16\]\/90 {
+  background-color: rgba(17, 17, 18, 0.9) !important;
+}
+.bg-\[\#090d16\]\/95 {
+  background-color: rgba(17, 17, 18, 0.95) !important;
+}
+
+/* Aside menu & modal sidebar */
+.bg-\[\#0a0f1d\] {
+  background-color: #121214 !important;
+}
+.bg-\[\#0a0f1d\]\/10 {
+  background-color: rgba(18, 18, 20, 0.1) !important;
+}
+
+/* Other custom dark backgrounds */
+.bg-\[\#0c101b\], 
+.bg-\[\#0c101d\], 
+.bg-\[\#0c101e\],
+.bg-\[\#0c101d\]\/90 {
+  background-color: #0d0d0f !important;
+}
+
+/* Premium micro-borders matching border-white/5 exactly */
+.border-slate-800,
+.border-slate-850,
+.border-slate-900,
+.border-slate-920,
+.border-slate-855,
+.border-slate-750,
+.border-slate-700 {
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.border-r-slate-900 {
+  border-right-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.border-b-slate-920 {
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.divide-slate-800 > :not([hidden]) ~ :not([hidden]),
+.divide-slate-850 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Highlight tags with technical styling */
+.text-slate-205, .text-slate-100 {
+  color: #ffffff !important;
+}
+.text-slate-405, .text-slate-455, .text-slate-400 {
+  color: #a1a1aa !important;
+}
+.text-slate-550, .text-slate-500 {
+  color: #71717a !important;
+}
+
+

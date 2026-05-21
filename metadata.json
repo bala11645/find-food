@@ -1,0 +1,6 @@
+{
+  "name": "Food Court AI Admin Panel",
+  "description": "City-level street food, vendor management, real-time AI analytics, and hygiene monitoring control center.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,267 @@
+{
+  "entities": {
+    "admin": {
+      "title": "Admin",
+      "description": "Governing administrative officers",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["Super Admin", "City Admin", "Inspection Manager", "Moderation Team", "Support Team"] }
+      },
+      "required": ["email", "name", "role"]
+    },
+    "vendor": {
+      "title": "Vendor",
+      "description": "Commercial platform street food stalls",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "stallName": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "category": { "type": "string" },
+        "onboardingStatus": { "type": "string", "enum": ["Pending", "Approved", "Rejected", "Needs Docs", "Under Review", "Inspection Required"] },
+        "riskLevel": { "type": "string", "enum": ["Low", "Medium", "High"] },
+        "location": { "type": "string" },
+        "zoneId": { "type": "string" },
+        "nearbyFoodStreet": { "type": "string" },
+        "documents": { "type": "object" },
+        "photos": { "type": "object" },
+        "hygieneScore": { "type": "number" },
+        "hiddenGemScore": { "type": "number" },
+        "isTrustedBadge": { "type": "boolean" },
+        "subscriptionPlan": { "type": "string", "enum": ["Free", "Starter", "Growth", "Premium"] },
+        "status": { "type": "string", "enum": ["Active", "Suspended", "Pending", "Normal", "Warning", "Inspection Scheduled", "Trusted"] },
+        "ordersCount": { "type": "number" },
+        "createdDate": { "type": "string" },
+        "aiFlags": { "type": "array" }
+      },
+      "required": ["id", "stallName", "ownerName", "phone", "category", "onboardingStatus", "riskLevel", "location", "zoneId", "hygieneScore", "subscriptionPlan", "status"]
+    },
+    "vendorApproval": {
+      "title": "VendorApproval",
+      "description": "Historical audit log of vendor onboarding status transitions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "status": { "type": "string" },
+        "comments": { "type": "string" },
+        "assignedInspectorId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "vendorId", "vendorName", "status", "updatedAt"]
+    },
+    "order": {
+      "title": "Order",
+      "description": "Customer purchase transaction record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "customerName": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Processing", "Completed", "Cancelled", "Delayed"] },
+        "type": { "type": "string", "enum": ["Pickup", "Delivery"] },
+        "timestamp": { "type": "string" },
+        "prepTimeMinutes": { "type": "number" }
+      },
+      "required": ["id", "vendorName", "customerName", "amount", "status", "type", "timestamp", "prepTimeMinutes"]
+    },
+    "zone": {
+      "title": "Zone",
+      "description": "Geographical municipal street food zone",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "activeVendorsCount": { "type": "number" },
+        "hiddenGemsCount": { "type": "number" },
+        "crowdLevel": { "type": "string", "enum": ["Low", "Moderate", "High", "Overloaded"] },
+        "trafficIntensity": { "type": "string", "enum": ["Clear", "Busy", "Heavy", "Gridlock"] },
+        "category": { "type": "string", "enum": ["Night Food Street", "Temple Zone", "Tourist Zone", "SaaS Hub", "Residential"] },
+        "status": { "type": "string", "enum": ["Active", "Disabled"] },
+        "coordinates": { "type": "object" }
+      },
+      "required": ["id", "name", "activeVendorsCount", "hiddenGemsCount", "crowdLevel", "trafficIntensity", "category", "status"]
+    },
+    "inspector": {
+      "title": "Inspector",
+      "description": "Assigned health and safety inspector",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "assignedVendors": { "type": "array" },
+        "completedVisits": { "type": "number" },
+        "pendingInspections": { "type": "number" },
+        "currentZone": { "type": "string" },
+        "avatar": { "type": "string" }
+      },
+      "required": ["id", "name", "completedVisits", "pendingInspections", "currentZone"]
+    },
+    "hygieneReport": {
+      "title": "HygieneReport",
+      "description": "Official safety compliance audits",
+      "type": "object",
+      "properties": {
+        "vendorId": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "aiPhotoScore": { "type": "number" },
+        "customerFeedbackScore": { "type": "number" },
+        "inspectorReviewScore": { "type": "number" },
+        "foodSafetyStatus": { "type": "string", "enum": ["Pass", "Fail", "Under Investigation"] },
+        "lastInspectionDate": { "type": "string" }
+      },
+      "required": ["vendorId", "vendorName", "aiPhotoScore", "customerFeedbackScore", "inspectorReviewScore", "foodSafetyStatus", "lastInspectionDate"]
+    },
+    "contentPost": {
+      "title": "ContentPost",
+      "description": "Social media visual content updates by partners",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "videoPlaceholderText": { "type": "string" },
+        "foodPhotoUrl": { "type": "string" },
+        "caption": { "type": "string" },
+        "views": { "type": "number" },
+        "likes": { "type": "number" },
+        "reportCount": { "type": "number" },
+        "aiFlags": { "type": "array" },
+        "status": { "type": "string", "enum": ["Approved", "Flagged", "Removed"] }
+      },
+      "required": ["id", "vendorName", "status"]
+    },
+    "complaint": {
+      "title": "Complaint",
+      "description": "Client dispute or health complaint registry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "targetName": { "type": "string" },
+        "issueType": { "type": "string", "enum": ["Hygiene", "Payment", "Customer Conduct", "Vendor Delay", "Quality"] },
+        "priority": { "type": "string", "enum": ["Low", "Medium", "High", "Critical"] },
+        "assignedTo": { "type": "string" },
+        "status": { "type": "string", "enum": ["Open", "Pending", "Resolved"] },
+        "description": { "type": "string" },
+        "createdDate": { "type": "string" }
+      },
+      "required": ["id", "targetName", "issueType", "priority", "status", "description", "createdDate"]
+    },
+    "subscription": {
+      "title": "Subscription",
+      "description": "SaaS premium software packages active stats",
+      "type": "object",
+      "properties": {
+        "plan": { "type": "string", "enum": ["Free", "Starter", "Growth", "Premium"] },
+        "vendorName": { "type": "string" },
+        "amount": { "type": "number" },
+        "renewalDate": { "type": "string" },
+        "activeSince": { "type": "string" },
+        "autoRenew": { "type": "boolean" }
+      },
+      "required": ["plan", "vendorName", "amount", "renewalDate", "activeSince", "autoRenew"]
+    },
+    "notification": {
+      "title": "Notification",
+      "description": "Administrative announcement broadcasts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "audience": { "type": "string", "enum": ["All Vendors", "Specific Zone", "Low Hygiene", "Premium Only"] },
+        "type": { "type": "string", "enum": ["Hygiene Alert", "Festival Notice", "System Maintenance", "Promotion"] },
+        "scheduleTime": { "type": "string" },
+        "sentStatus": { "type": "string", "enum": ["Sent", "Scheduled"] }
+      },
+      "required": ["id", "title", "body", "audience", "type", "scheduleTime", "sentStatus"]
+    },
+    "aiAlert": {
+      "title": "AIAlert",
+      "description": "Anomalies detected by autonomous systems",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["Spam Detection", "Fake Reviews", "Abnormal Traffic", "Suspicious Activity"] },
+        "severity": { "type": "string", "enum": ["Info", "Warning", "High Risk"] },
+        "target": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "resolved": { "type": "boolean" }
+      },
+      "required": ["id", "type", "severity", "target", "details", "timestamp", "resolved"]
+    },
+    "report": {
+      "title": "Report",
+      "description": "Exported security and audit report entities",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "createdDate": { "type": "string" },
+        "checksum": { "type": "string" },
+        "downloadUrl": { "type": "string" }
+      },
+      "required": ["id", "title", "type", "createdDate", "checksum", "downloadUrl"]
+    }
+  },
+  "firestore": {
+    "/admins/{uid}": {
+      "schema": "admin",
+      "description": "Governing administrative officials profiles key by auth UID"
+    },
+    "/vendors/{vendorId}": {
+      "schema": "vendor",
+      "description": "Registered and prospective food stalls master list"
+    },
+    "/vendorApprovals/{approvalId}": {
+      "schema": "vendorApproval",
+      "description": "Historical audit trials of vendor approvals and onboarding steps"
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "All customer pick-ups and deliveries telemetry logs"
+    },
+    "/zones/{zoneId}": {
+      "schema": "zone",
+      "description": "Metropolitan street zones configurations"
+    },
+    "/inspectors/{inspectorId}": {
+      "schema": "inspector",
+      "description": "Licensed sanitary officers record log"
+    },
+    "/hygieneReports/{reportId}": {
+      "schema": "hygieneReport",
+      "description": "Comprehensive sanitary scoring logs"
+    },
+    "/contentPosts/{postId}": {
+      "schema": "contentPost",
+      "description": "Influencer videos and vendor photo items"
+    },
+    "/complaints/{complaintId}": {
+      "schema": "complaint",
+      "description": "Citizens and vendor support ticket desks"
+    },
+    "/subscriptions/{subscriptionId}": {
+      "schema": "subscription",
+      "description": "Active payment integrations"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "notification",
+      "description": "Outgoing SMS/Alert broadcasts log"
+    },
+    "/aiAlerts/{alertId}": {
+      "schema": "aiAlert",
+      "description": "Real-time anomaly flags raised by computer vision"
+    },
+    "/reports/{reportId}": {
+      "schema": "report",
+      "description": "Exported administrator system compliance spreadsheets"
+    }
+  }
+}
